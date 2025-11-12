@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randevu Planlayıcı</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #333;
+      --card: #f1f1f1;
+      --btn: #007bff;
+      --btn-hover: #0056b3;
+    }
+
+    body.dark {
+      --bg: #1a1a1a;
+      --text: #f1f1f1;
+      --card: #2b2b2b;
+      --btn: #0d6efd;
+      --btn-hover: #0a58ca;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: var(--bg);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    h1 { text-align: center; color: var(--btn); }
+    input, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: var(--btn);
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover { background-color: var(--btn-hover); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+
+    tr:hover {
+      background: var(--card);
+    }
+
+    .sil {
+      background-color: crimson;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .sil:hover { background-color: darkred; }
+
+    .tema-btn {
+      background-color: var(--card);
+      color: var(--text);
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 8px 12px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Randevu Planlayıcı</h1>
+  <button class="tema-btn" id="temaDegistir">🌙 Gece Modu</button>
+
+  <form id="randevuForm">
+    <input type="text" id="isim" placeholder="Adını gir" required>
+    <input type="date" id="tarih" required>
+    <input type="time" id="saat" required>
+    <button type="submit">Randevu Oluştur</button>
+  </form>
+
+  <h3>Oluşturulan Randevular:</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>İsim</th>
+        <th>Tarih</th>
+        <th>Saat</th>
+        <th>Sil</th>
+      </tr>
+    </thead>
+    <tbody id="liste"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('randevuForm');
+    const liste = document.getElementById('liste');
+    const temaBtn = document.getElementById('temaDegistir');
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+
+    // Tema yükle
+    if (darkMode) document.body.classList.add('dark');
+
+    temaBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      darkMode = !darkMode;
+      localStorage.setItem('darkMode', darkMode);
+      temaBtn.textContent = darkMode ? '☀️ Açık Mod' : '🌙 Gece Modu';
+    });
+
+    temaBtn.textContent = darkMode ? '☀️ Açık Mod' : '🌙 Gece Modu';
+
+    // LocalStorage’dan yükle
+    let randevular = JSON.parse(localStorage.getItem('randevular')) || [];
+
+    function listeyiGuncelle() {
+      liste.innerHTML = '';
+      randevular.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.isim}</td>
+          <td>${r.tarih}</td>
+          <td>${r.saat}</td>
+          <td><button class="sil" data-index="${i}">Sil</button></td>
+        `;
+        liste.appendChild(tr);
+      });
+
+      document.querySelectorAll('.sil').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const i = e.target.getAttribute('data-index');
+          randevular.splice(i, 1);
+          localStorage.setItem('randevular', JSON.stringify(randevular));
+          listeyiGuncelle();
+        });
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const yeni = {
+        isim: document.getElementById('isim').value,
+        tarih: document.getElementById('tarih').value,
+        saat: document.getElementById('saat').value
+      };
+      randevular.push(yeni);
+      localStorage.setItem('randevular', JSON.stringify(randevular));
+      listeyiGuncelle();
+      form.reset();
+    });
+
+    listeyiGuncelle();
+  </script>
+</body>
+</html><!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Randevu Planlayıcı</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --text: #333;
+      --card: #f1f1f1;
+      --btn: #007bff;
+      --btn-hover: #0056b3;
+    }
+
+    body.dark {
+      --bg: #1a1a1a;
+      --text: #f1f1f1;
+      --card: #2b2b2b;
+      --btn: #0d6efd;
+      --btn-hover: #0a58ca;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      max-width: 600px;
+      margin: 40px auto;
+      padding: 20px;
+      border-radius: 15px;
+      background-color: var(--bg);
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      transition: 0.3s;
+    }
+
+    h1 { text-align: center; color: var(--btn); }
+    input, button {
+      width: 100%;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    button {
+      background-color: var(--btn);
+      color: white;
+      cursor: pointer;
+      border: none;
+    }
+
+    button:hover { background-color: var(--btn-hover); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+    }
+
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ccc;
+      text-align: left;
+    }
+
+    tr:hover {
+      background: var(--card);
+    }
+
+    .sil {
+      background-color: crimson;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      padding: 5px 10px;
+      cursor: pointer;
+    }
+
+    .sil:hover { background-color: darkred; }
+
+    .tema-btn {
+      background-color: var(--card);
+      color: var(--text);
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      padding: 8px 12px;
+      float: right;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>Randevu Planlayıcı</h1>
+  <button class="tema-btn" id="temaDegistir">🌙 Gece Modu</button>
+
+  <form id="randevuForm">
+    <input type="text" id="isim" placeholder="Adını gir" required>
+    <input type="date" id="tarih" required>
+    <input type="time" id="saat" required>
+    <button type="submit">Randevu Oluştur</button>
+  </form>
+
+  <h3>Oluşturulan Randevular:</h3>
+  <table>
+    <thead>
+      <tr>
+        <th>İsim</th>
+        <th>Tarih</th>
+        <th>Saat</th>
+        <th>Sil</th>
+      </tr>
+    </thead>
+    <tbody id="liste"></tbody>
+  </table>
+
+  <script>
+    const form = document.getElementById('randevuForm');
+    const liste = document.getElementById('liste');
+    const temaBtn = document.getElementById('temaDegistir');
+    let darkMode = localStorage.getItem('darkMode') === 'true';
+
+    // Tema yükle
+    if (darkMode) document.body.classList.add('dark');
+
+    temaBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      darkMode = !darkMode;
+      localStorage.setItem('darkMode', darkMode);
+      temaBtn.textContent = darkMode ? '☀️ Açık Mod' : '🌙 Gece Modu';
+    });
+
+    temaBtn.textContent = darkMode ? '☀️ Açık Mod' : '🌙 Gece Modu';
+
+    // LocalStorage’dan yükle
+    let randevular = JSON.parse(localStorage.getItem('randevular')) || [];
+
+    function listeyiGuncelle() {
+      liste.innerHTML = '';
+      randevular.forEach((r, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${r.isim}</td>
+          <td>${r.tarih}</td>
+          <td>${r.saat}</td>
+          <td><button class="sil" data-index="${i}">Sil</button></td>
+        `;
+        liste.appendChild(tr);
+      });
+
+      document.querySelectorAll('.sil').forEach(btn => {
+        btn.addEventListener('click', e => {
+          const i = e.target.getAttribute('data-index');
+          randevular.splice(i, 1);
+          localStorage.setItem('randevular', JSON.stringify(randevular));
+          listeyiGuncelle();
+        });
+      });
+    }
+
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const yeni = {
+        isim: document.getElementById('isim').value,
+        tarih: document.getElementById('tarih').value,
+        saat: document.getElementById('saat').value
+      };
+      randevular.push(yeni);
+      localStorage.setItem('randevular', JSON.stringify(randevular));
+      listeyiGuncelle();
+      form.reset();
+    });
+
+    listeyiGuncelle();
+  </script>
+</body>
+</html>
